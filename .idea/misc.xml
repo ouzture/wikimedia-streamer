@@ -26,6 +26,11 @@
       </set>
     </option>
   </component>
+  <component name="SwUserDefinedSpecifications">
+    <option name="specTypeByUrl">
+      <map />
+    </option>
+  </component>
   <component name="accountSettings">
     <option name="activeProfile" value="profile:default" />
     <option name="activeRegion" value="eu-west-2" />
