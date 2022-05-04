@@ -1,5 +1,6 @@
 package com.oakensoft.kafka.consumer;
 
+import com.google.gson.JsonParser;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -52,12 +53,31 @@ public class ConsumerOpenSearch {
             while (true){
                 ConsumerRecords<String,String> records = consumer.poll(Duration.ofMillis(3000));
 
+
                 for(ConsumerRecord<String,String> record : records){
+
+                    String id = JsonParser.parseString(record.value())
+                            .getAsJsonObject()
+                            .get("meta")
+                            .getAsJsonObject()
+                            .get("id")
+                            .getAsString();
+
                     IndexRequest indexRequest = new IndexRequest(indexName)
-                            .source(record.value(), XContentType.JSON);
+                            .source(record.value(), XContentType.JSON)
+                            .id(id);
+
+
+                    //id for idempotency, if no id provided in message
+                    //String id = record.topic()+"_"+ record.partition()+"_"+ record.offset();
+
 
                     try {
+
+
+
                         IndexResponse response = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
+
 
                         logger.info("Response Id:{}", response.getId());
                     }catch (Exception e){
